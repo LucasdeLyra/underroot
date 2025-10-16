@@ -31,4 +31,9 @@ public class LatexServer {
             e.printStackTrace();
         }
     }
+
+    public static void main(String[] args) {
+        LatexServer server = new LatexServer();
+        server.start();
+    }
 }
