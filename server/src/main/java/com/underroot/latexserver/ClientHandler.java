@@ -21,6 +21,8 @@ public class ClientHandler implements Runnable {
         this.clientSocket = socket;
     }
 
+    // loop pra ler as mensagens em json que o cliente envia e converter para objeto java do tipo Message
+    // o metodo handleMessage é chamado para decidir o que fazer com a mensagem
     @Override
     public void run() {
         try {
@@ -43,12 +45,10 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Routes incoming messages based on their type.
-     */
+    // direciona as mensagens recebidas com base no seu tipo
     private void handleMessage(Message message) {
         System.out.println("Received message of type: " + message.type());
-        // This switch statement is where we will add all future message handling logic.
+
         switch (message.type()) {
             case "JOIN_DOCUMENT":
                 // Logic for joining a document will go here
@@ -65,15 +65,13 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // This method can be used by other parts of the server to send a message to this client
+    // esse metodo pode ser usado por outras partes do servidor para enviar uma mensagem a este cliente
     public void sendMessage(Message message) {
         String jsonMessage = gson.toJson(message);
         out.println(jsonMessage);
     }
 
-    /**
-     * Helper method to close the connection and its streams safely.
-     */
+    // fecha a conexão
     private void closeConnection() {
         try {
             if (in != null) in.close();

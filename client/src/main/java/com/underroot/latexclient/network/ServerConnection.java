@@ -19,6 +19,7 @@ private Socket socket;
     private BufferedReader in;
     private final Gson gson = new Gson(); // JSON parser
 
+    // tenta se conectar com o servidor e inicia uma nova thread pra ouvir as mensagens do servidor
     public void connect() {
         try {
             this.socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -35,9 +36,7 @@ private Socket socket;
         }
     }
 
-    /**
-     * Sends a structured Message object to the server.
-     */
+    // metodo para o resto da aplicação cliente usar para enviar mensagens
     public void sendMessage(Message message) {
         if (out != null) {
             String jsonMessage = gson.toJson(message);
@@ -45,9 +44,7 @@ private Socket socket;
         }
     }
 
-    /**
-     * The main loop for the listener thread.
-     */
+    // esse metodo tem um loop infinito que espera por mensagens do servidor
     private void startListening() {
         try {
             String jsonMessage;
@@ -60,9 +57,7 @@ private Socket socket;
         }
     }
 
-    /**
-     * Routes incoming messages from the server based on their type.
-     */
+    // interpreta a mensagem que o cliente ouviu do servidor e decide o que fazer
     private void handleMessage(Message message) {
         System.out.println("Received message of type: " + message.type());
         // This is where you'll update the UI based on server messages
@@ -84,9 +79,7 @@ private Socket socket;
         }
     }
 
-    /**
-     * Closes the connection and all associated resources.
-     */
+    // fecha a conexão
     public void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
