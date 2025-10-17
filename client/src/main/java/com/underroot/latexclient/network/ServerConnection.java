@@ -1,23 +1,34 @@
 package com.underroot.latexclient.network;
 
 import com.google.gson.Gson;
-import com.underroot.latexclient.dto.Message;
+import com.underroot.common.dto.Message;
+import com.underroot.common.dto.MessageType;
+import com.underroot.latexclient.LatexEditorGui;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ServerConnection {
 
     private static final String SERVER_ADDRESS = "127.0.0.1"; // localhost
     private static final int SERVER_PORT = 58008;
 
-private Socket socket;
+    private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private final Gson gson = new Gson(); // JSON parser
+    private final LatexEditorGui gui;
+
+    public ServerConnection(LatexEditorGui gui) {
+        this.gui = gui;
+    }
 
     // tenta se conectar com o servidor e inicia uma nova thread pra ouvir as mensagens do servidor
     public void connect() {
@@ -60,22 +71,81 @@ private Socket socket;
     // interpreta a mensagem que o cliente ouviu do servidor e decide o que fazer
     private void handleMessage(Message message) {
         System.out.println("Received message of type: " + message.type());
-        // This is where you'll update the UI based on server messages
-        switch (message.type()) {
-            case "DOCUMENT_STATE":
-            case "UPDATE_DOCUMENT":
-                // Logic to update the local editor content will go here
-                break;
-            case "USER_JOINED":
-            case "USER_LEFT":
-                // Logic to update the list of collaborators will go here
-                break;
-            case "COMPILE_RESULT":
-                // Logic to show the compiled PDF or an error will go here
-                break;
-            default:
-                System.out.println("Unknown message type from server: " + message.type());
-                break;
+        // Use SwingUtilities.invokeLater to ensure GUI updates are on the Event Dispatch Thread
+        SwingUtilities.invokeLater(() -> {
+            switch (message.type()) {
+                case MessageType.DOCUMENT_STATE:
+                    handleDocumentState(message.getPayload(com.underroot.common.dto.payload.DocumentStatePayload.class));
+                    break;
+                case MessageType.UPDATE_DOCUMENT:
+                    handleUpdateDocument(message.getPayload(com.underroot.common.dto.payload.UpdateDocumentPayload.class));
+                    break;
+                case MessageType.USER_JOINED:
+                    handleUserJoined(message.getPayload(com.underroot.common.dto.payload.UserJoinedPayload.class));
+                    break;
+                case MessageType.USER_LEFT:
+                    handleUserLeft(message.getPayload(com.underroot.common.dto.payload.UserLeftPayload.class));
+                    break;
+                case MessageType.COMPILE_RESULT:
+                    handleCompileResult(message.getPayload(com.underroot.common.dto.payload.CompileResultPayload.class));
+                    break;
+                default:
+                    System.out.println("Unknown message type from server: " + message.type());
+                    break;
+            }
+        });
+    }
+
+    private void handleDocumentState(com.underroot.common.dto.payload.DocumentStatePayload payload) {
+        gui.getIsRemoteChange().set(true);
+        gui.getTextArea().setText(payload.content());
+        gui.getIsRemoteChange().set(false);
+    }
+
+    private void handleUpdateDocument(com.underroot.common.dto.payload.UpdateDocumentPayload payload) {
+        gui.getIsRemoteChange().set(true);
+        JTextArea textArea = gui.getTextArea();
+        if ("INSERT".equals(payload.operation())) {
+            textArea.insert(payload.text(), payload.position());
+        } else if ("DELETE".equals(payload.operation())) {
+            textArea.replaceRange(null, payload.position(), payload.position() + payload.length());
+        }
+        gui.getIsRemoteChange().set(false);
+    }
+
+    private void handleUserJoined(com.underroot.common.dto.payload.UserJoinedPayload payload) {
+        DefaultListModel<String> model = (DefaultListModel<String>) gui.getUserList().getModel();
+        if (!model.contains(payload.username())) {
+            model.addElement(payload.username());
+        }
+    }
+
+    private void handleUserLeft(com.underroot.common.dto.payload.UserLeftPayload payload) {
+        DefaultListModel<String> model = (DefaultListModel<String>) gui.getUserList().getModel();
+        model.removeElement(payload.username());
+    }
+
+    private void handleCompileResult(com.underroot.common.dto.payload.CompileResultPayload payload) {
+        if (payload.success()) {
+            try {
+                Path tempPdf = Files.createTempFile(payload.docId() + "-", ".pdf");
+                Files.write(tempPdf, payload.pdfBytes());
+                JOptionPane.showMessageDialog(gui, "Compilation successful! PDF saved to:\n" + tempPdf.toAbsolutePath(), "Compilation Success", JOptionPane.INFORMATION_MESSAGE);
+                // Try to open the PDF file
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(tempPdf.toFile());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(gui, "Compilation successful, but failed to save or open the PDF.", "File Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // Show the error log in a scrollable text area
+            JTextArea logArea = new JTextArea(payload.log());
+            logArea.setEditable(false);
+            JScrollPane scrollPane = new JScrollPane(logArea);
+            scrollPane.setPreferredSize(new Dimension(600, 400));
+            JOptionPane.showMessageDialog(gui, scrollPane, "Compilation Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 

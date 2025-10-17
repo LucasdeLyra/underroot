@@ -1,4 +1,7 @@
 C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\ClientHandler.java
-C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\dto\Message.java
+C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\compiler\LatexCompiler.java
 C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\LatexServer.java
 C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\Main.java
+C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\model\Document.java
+C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\model\DocumentManager.java
+C:\Users\Cliente\Desktop\USP\underroot\server\src\main\java\com\underroot\latexserver\ot\Operation.java

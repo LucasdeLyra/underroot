@@ -1,5 +1,7 @@
 package com.underroot.latexserver;
 
+import com.underroot.latexserver.model.DocumentManager;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,6 +9,7 @@ import java.net.Socket;
 public class LatexServer {
 
     private static final int PORT = 58008;
+    private final DocumentManager documentManager = new DocumentManager();
 
     // cria um serverSocket na porta 58008
     public void start() {
@@ -21,7 +24,7 @@ public class LatexServer {
                 System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
 
                 // Create a new ClientHandler for the connected client
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
+                ClientHandler clientHandler = new ClientHandler(clientSocket, documentManager);
 
                 // Start the handler in a new thread
                 new Thread(clientHandler).start();

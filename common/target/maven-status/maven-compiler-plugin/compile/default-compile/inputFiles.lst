@@ -1,0 +1,13 @@
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\Message.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\MessageType.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\CompileResultPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\DeleteTextPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\DocumentStatePayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\InsertTextPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\JoinDocumentPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\PatchDocumentPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\RequestCompilePayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\UpdateDocumentPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\UserJoinedPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\dto\payload\UserLeftPayload.java
+C:\Users\Cliente\Desktop\USP\underroot\common\src\main\java\com\underroot\common\ot\DocumentTransformer.java
