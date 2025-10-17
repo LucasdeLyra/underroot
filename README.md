@@ -1,10 +1,9 @@
-## Build server an client 
+## Build server and client 
 
-mvn -f server\pom.xml clean package
-
-mvn -f client\pom.xml clean package
+mvn -f pom.xml clean install
 
 ## Run server and client
-mvn -f server\pom.xml exec:java -Dexec.mainClass="com.underroot.latexserver.Main"
 
-mvn -f client\pom.xml exec:java -Dexec.mainClass="com.underroot.latexclient.Main"
+mvn -f server/pom.xml exec:java
+
+mvn -f client/pom.xml exec:java
