@@ -18,6 +18,7 @@ public class LatexEditorGui extends JFrame {
     private JTextArea textArea;
     private JList<String> userList;
     private JButton compileButton;
+    private JButton logoutButton; // Add logout button field
     private ServerConnection serverConnection;
     private final AtomicBoolean isRemoteChange = new AtomicBoolean(false);
     private String docId; // To know which document we are editing
@@ -37,6 +38,7 @@ public class LatexEditorGui extends JFrame {
         textArea = new JTextArea();
         userList = new JList<>(new DefaultListModel<>());
         compileButton = new JButton("Compile");
+        logoutButton = new JButton("Logout"); // Initialize the button
     }
 
     private void layoutComponents() {
@@ -58,9 +60,10 @@ public class LatexEditorGui extends JFrame {
         rightPanel.add(new JLabel("Collaborators"), BorderLayout.NORTH);
 
 
-        // Compile button at the bottom
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // Compile and Logout buttons at the bottom
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 5)); // Use GridLayout for two buttons
         buttonPanel.add(compileButton);
+        buttonPanel.add(logoutButton);
         rightPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         mainPanel.add(rightPanel, BorderLayout.EAST);
@@ -79,10 +82,13 @@ public class LatexEditorGui extends JFrame {
         this.serverConnection = serverConnection;
         addTextModificationListener();
         addCompileButtonListener();
+        addLogoutButtonListener(); // Add listener for the new button
     }
 
     public void setDocId(String docId) {
         this.docId = docId;
+        // Update the window title to show the project name
+        setTitle("Underroot LaTeX Editor - " + docId);
     }
 
     public void setDocumentState(String content, int version) {
@@ -109,7 +115,7 @@ public class LatexEditorGui extends JFrame {
                 clientVersion++;
 
                 PatchDocumentPayload payload = new PatchDocumentPayload(docId, patch, serverVersion, clientVersion);
-                serverConnection.sendMessage(new Message(MessageType.PATCH_DOCUMENT, new com.google.gson.Gson().toJsonTree(payload)));
+                serverConnection.sendMessage(Message.of(MessageType.PATCH_DOCUMENT, payload));
             }
 
             @Override
@@ -134,8 +140,21 @@ public class LatexEditorGui extends JFrame {
             if (serverConnection != null && docId != null) {
                 System.out.println("Compile button clicked for doc: " + docId);
                 RequestCompilePayload payload = new RequestCompilePayload(docId);
-                serverConnection.sendMessage(new Message(MessageType.REQUEST_COMPILE, new com.google.gson.Gson().toJsonTree(payload)));
+                serverConnection.sendMessage(Message.of(MessageType.REQUEST_COMPILE, payload));
             }
+        });
+    }
+
+    private void addLogoutButtonListener() {
+        logoutButton.addActionListener(e -> {
+            // Disconnect from the server
+            if (serverConnection != null) {
+                serverConnection.disconnect();
+            }
+            // Close the current editor window
+            this.dispose();
+            // Re-run the main method to show the login dialog again
+            Main.main(new String[]{});
         });
     }
 

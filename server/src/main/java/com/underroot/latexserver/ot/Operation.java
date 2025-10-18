@@ -1,7 +1,5 @@
 package com.underroot.latexserver.ot;
 
-import java.util.LinkedList;
-
 public class Operation {
     private final String type;
     private final int position;

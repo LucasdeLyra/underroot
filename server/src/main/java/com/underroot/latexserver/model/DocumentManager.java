@@ -7,8 +7,8 @@ public class DocumentManager {
 
     private final Map<String, Document> activeDocuments = new ConcurrentHashMap<>();
 
-    public Document getOrCreateDocument(String docId) {
-        return activeDocuments.computeIfAbsent(docId, Document::new);
+    public Document getOrCreateDocument(String docId, String password) {
+        return activeDocuments.computeIfAbsent(docId, id -> new Document(id, password));
     }
 
     public Document getDocument(String docId) {

@@ -8,14 +8,35 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Document {
 
     private final String id;
+    private String password; // Can be null if no password is set
     private final StringBuilder content;
     private final Set<ClientHandler> collaborators;
     private int version = 0;
 
-    public Document(String id) {
+    public Document(String id, String password) {
         this.id = id;
+        this.password = password;
         this.content = new StringBuilder();
         this.collaborators = ConcurrentHashMap.newKeySet();
+    }
+
+    public boolean checkPassword(String password) {
+        // If the document's password is null or empty, any password is valid (or no password).
+        if (this.password == null || this.password.isEmpty()) {
+            return true;
+        }
+        return this.password.equals(password);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        // Only allow setting the password if one isn't already set.
+        if (this.password == null || this.password.isEmpty()) {
+            this.password = password;
+        }
     }
 
     public synchronized int getVersion() {

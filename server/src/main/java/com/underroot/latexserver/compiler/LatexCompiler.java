@@ -1,6 +1,5 @@
 package com.underroot.latexserver.compiler;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,19 +56,6 @@ public class LatexCompiler {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return new CompilationResult(false, null, "Server error during compilation: " + e.getMessage());
-        } finally {
-            // 4. Clean up the temporary directory
-            if (tempDir != null) {
-                try {
-                    Files.walk(tempDir)
-                         .map(Path::toFile)
-                         .forEach(File::delete);
-                } catch (IOException e) {
-                    // Log cleanup failure but don't re-throw
-                    System.err.println("Failed to clean up temp directory: " + tempDir);
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }

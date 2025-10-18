@@ -10,6 +10,7 @@ import com.underroot.common.dto.payload.UserJoinedPayload;
 import com.underroot.common.dto.payload.UserLeftPayload;
 import com.underroot.common.ot.DocumentTransformer;
 import com.underroot.latexclient.LatexEditorGui;
+import com.underroot.latexclient.Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,6 +97,9 @@ public class ServerConnection {
                 case MessageType.COMPILE_RESULT:
                     handleCompileResult(message.getPayload(CompileResultPayload.class));
                     break;
+                case MessageType.AUTH_FAILED:
+                    handleAuthFailed();
+                    break;
                 default:
                     System.out.println("Unknown message type from server: " + message.type());
                     break;
@@ -105,6 +109,16 @@ public class ServerConnection {
 
     private void handleDocumentState(DocumentStatePayload payload) {
         gui.setDocumentState(payload.content(), 0); // Initial version is 0
+        // Populate the user list
+        DefaultListModel<String> model = (DefaultListModel<String>) gui.getUserList().getModel();
+        model.clear();
+        // The server sends the list of users already in the document.
+        // The USER_JOINED message will add the current user to their own list.
+        for (String user : payload.collaborators()) {
+            if (!model.contains(user)) {
+                model.addElement(user);
+            }
+        }
     }
 
     private void handlePatchDocument(PatchDocumentPayload payload) {
@@ -158,6 +172,14 @@ public class ServerConnection {
             scrollPane.setPreferredSize(new Dimension(600, 400));
             JOptionPane.showMessageDialog(gui, scrollPane, "Compilation Failed", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void handleAuthFailed() {
+        JOptionPane.showMessageDialog(gui, "Authentication failed. Please check the project name and password.", "Login Error", JOptionPane.ERROR_MESSAGE);
+        // Disconnect and restart the login process
+        disconnect();
+        gui.dispose();
+        Main.main(new String[]{});
     }
 
     // fecha a conexão

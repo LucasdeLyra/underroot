@@ -18,7 +18,7 @@ class DocumentManagerTest {
         String docId = "new-doc";
         assertNull(documentManager.getDocument(docId), "Document should not exist before creation.");
         
-        Document doc = documentManager.getOrCreateDocument(docId);
+        Document doc = documentManager.getOrCreateDocument(docId, "test-pass");
         
         assertNotNull(doc, "getOrCreateDocument should return a non-null document.");
         assertEquals(docId, doc.getId(), "The new document should have the correct ID.");
@@ -30,10 +30,10 @@ class DocumentManagerTest {
     @Test
     void getOrCreateDocument_ShouldReturnExistingDocument_WhenItExists() {
         String docId = "existing-doc";
-        Document firstInstance = documentManager.getOrCreateDocument(docId);
+        Document firstInstance = documentManager.getOrCreateDocument(docId, "pass1");
         assertNotNull(firstInstance, "First instance should not be null.");
 
-        Document secondInstance = documentManager.getOrCreateDocument(docId);
+        Document secondInstance = documentManager.getOrCreateDocument(docId, "pass2");
         
         assertSame(firstInstance, secondInstance, "getOrCreateDocument should return the same instance for the same ID.");
     }

@@ -1,13 +1,10 @@
-com\underroot\common\dto\payload\UpdateDocumentPayload.class
+com\underroot\common\dto\MessageType.class
+com\underroot\common\dto\payload\CompileResultPayload.class
 com\underroot\common\dto\Message.class
 com\underroot\common\dto\payload\PatchDocumentPayload.class
+com\underroot\common\dto\payload\UserLeftPayload.class
 com\underroot\common\dto\payload\RequestCompilePayload.class
 com\underroot\common\ot\DocumentTransformer.class
 com\underroot\common\dto\payload\JoinDocumentPayload.class
 com\underroot\common\dto\payload\UserJoinedPayload.class
 com\underroot\common\dto\payload\DocumentStatePayload.class
-com\underroot\common\dto\MessageType.class
-com\underroot\common\dto\payload\CompileResultPayload.class
-com\underroot\common\dto\payload\UserLeftPayload.class
-com\underroot\common\dto\payload\DeleteTextPayload.class
-com\underroot\common\dto\payload\InsertTextPayload.class

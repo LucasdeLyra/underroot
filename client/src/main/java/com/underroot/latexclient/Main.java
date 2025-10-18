@@ -1,41 +1,68 @@
 package com.underroot.latexclient;
 
-import com.google.gson.Gson;
 import com.underroot.common.dto.Message;
 import com.underroot.common.dto.MessageType;
 import com.underroot.common.dto.payload.JoinDocumentPayload;
 import com.underroot.latexclient.network.ServerConnection;
 
 import javax.swing.*;
+import java.awt.GridLayout;
 
 public class Main {
     public static void main(String[] args) {
         // Use SwingUtilities.invokeLater to ensure GUI updates are on the Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
-            // In a real app, this would come from user input (e.g., a dialog box)
-            String docId = "default-doc";
-            String username = "user-" + (int) (Math.random() * 1000); // Random username
+            // Create a panel with all the input fields
+            JTextField usernameField = new JTextField();
+            JTextField docIdField = new JTextField("default-doc");
+            JPasswordField passwordField = new JPasswordField();
 
-            // 1. Create the GUI
-            LatexEditorGui gui = new LatexEditorGui();
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Your Username:"));
+            panel.add(usernameField);
+            panel.add(new JLabel("Project Name:"));
+            panel.add(docIdField);
+            panel.add(new JLabel("Project Password:"));
+            panel.add(passwordField);
 
-            // 2. Create the server connection
-            ServerConnection serverConnection = new ServerConnection(gui);
+            int result = JOptionPane.showConfirmDialog(null, panel, "Join or Create Project",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            // 3. Link the GUI to the connection and set document details
-            gui.setServerConnection(serverConnection);
-            gui.setDocId(docId);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText();
+                String docId = docIdField.getText();
+                String password = new String(passwordField.getPassword());
 
-            // 4. Connect to the server
-            serverConnection.connect();
+                if (username == null || username.trim().isEmpty()) {
+                    username = "user-" + (int) (Math.random() * 1000); // Random username as fallback
+                }
+                if (docId == null || docId.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Project name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    System.exit(0);
+                }
 
-            // 5. Show the GUI
-            gui.setVisible(true);
+                // 1. Create the GUI
+                LatexEditorGui gui = new LatexEditorGui();
 
-            // 6. Join the document
-            JoinDocumentPayload payload = new JoinDocumentPayload(docId, username);
-            Message message = new Message(MessageType.JOIN_DOCUMENT, new Gson().toJsonTree(payload));
-            serverConnection.sendMessage(message);
+                // 2. Create the server connection
+                ServerConnection serverConnection = new ServerConnection(gui);
+
+                // 3. Link the GUI to the connection and set document details
+                gui.setServerConnection(serverConnection);
+                gui.setDocId(docId);
+
+                // 4. Connect to the server
+                serverConnection.connect();
+
+                // 5. Show the GUI
+                gui.setVisible(true);
+
+                // 6. Join the document
+                JoinDocumentPayload payload = new JoinDocumentPayload(docId, username, password);
+                serverConnection.sendMessage(Message.of(MessageType.JOIN_DOCUMENT, payload));
+            } else {
+                System.exit(0); // Exit if user cancels
+            }
         });
     }
 }
