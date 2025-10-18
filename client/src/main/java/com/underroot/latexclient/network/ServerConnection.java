@@ -3,6 +3,12 @@ package com.underroot.latexclient.network;
 import com.google.gson.Gson;
 import com.underroot.common.dto.Message;
 import com.underroot.common.dto.MessageType;
+import com.underroot.common.dto.payload.CompileResultPayload;
+import com.underroot.common.dto.payload.DocumentStatePayload;
+import com.underroot.common.dto.payload.PatchDocumentPayload;
+import com.underroot.common.dto.payload.UserJoinedPayload;
+import com.underroot.common.dto.payload.UserLeftPayload;
+import com.underroot.common.ot.DocumentTransformer;
 import com.underroot.latexclient.LatexEditorGui;
 
 import javax.swing.*;
@@ -25,6 +31,7 @@ public class ServerConnection {
     private BufferedReader in;
     private final Gson gson = new Gson(); // JSON parser
     private final LatexEditorGui gui;
+    private final DocumentTransformer documentTransformer = new DocumentTransformer();
 
     public ServerConnection(LatexEditorGui gui) {
         this.gui = gui;
@@ -75,19 +82,19 @@ public class ServerConnection {
         SwingUtilities.invokeLater(() -> {
             switch (message.type()) {
                 case MessageType.DOCUMENT_STATE:
-                    handleDocumentState(message.getPayload(com.underroot.common.dto.payload.DocumentStatePayload.class));
+                    handleDocumentState(message.getPayload(DocumentStatePayload.class));
                     break;
-                case MessageType.UPDATE_DOCUMENT:
-                    handleUpdateDocument(message.getPayload(com.underroot.common.dto.payload.UpdateDocumentPayload.class));
+                case MessageType.PATCH_DOCUMENT:
+                    handlePatchDocument(message.getPayload(PatchDocumentPayload.class));
                     break;
                 case MessageType.USER_JOINED:
-                    handleUserJoined(message.getPayload(com.underroot.common.dto.payload.UserJoinedPayload.class));
+                    handleUserJoined(message.getPayload(UserJoinedPayload.class));
                     break;
                 case MessageType.USER_LEFT:
-                    handleUserLeft(message.getPayload(com.underroot.common.dto.payload.UserLeftPayload.class));
+                    handleUserLeft(message.getPayload(UserLeftPayload.class));
                     break;
                 case MessageType.COMPILE_RESULT:
-                    handleCompileResult(message.getPayload(com.underroot.common.dto.payload.CompileResultPayload.class));
+                    handleCompileResult(message.getPayload(CompileResultPayload.class));
                     break;
                 default:
                     System.out.println("Unknown message type from server: " + message.type());
@@ -96,36 +103,40 @@ public class ServerConnection {
         });
     }
 
-    private void handleDocumentState(com.underroot.common.dto.payload.DocumentStatePayload payload) {
-        gui.getIsRemoteChange().set(true);
-        gui.getTextArea().setText(payload.content());
-        gui.getIsRemoteChange().set(false);
+    private void handleDocumentState(DocumentStatePayload payload) {
+        gui.setDocumentState(payload.content(), 0); // Initial version is 0
     }
 
-    private void handleUpdateDocument(com.underroot.common.dto.payload.UpdateDocumentPayload payload) {
+    private void handlePatchDocument(PatchDocumentPayload payload) {
+        // This is a simplified OT. A real implementation would need transformation logic.
+        String currentText = gui.getTextArea().getText();
+        String newText = documentTransformer.applyPatch(currentText, payload.patch());
+
         gui.getIsRemoteChange().set(true);
-        JTextArea textArea = gui.getTextArea();
-        if ("INSERT".equals(payload.operation())) {
-            textArea.insert(payload.text(), payload.position());
-        } else if ("DELETE".equals(payload.operation())) {
-            textArea.replaceRange(null, payload.position(), payload.position() + payload.length());
-        }
+        // Preserve cursor position
+        int cursorPosition = gui.getTextArea().getCaretPosition();
+        gui.getTextArea().setText(newText);
+        // Try to restore cursor position, bounded by the new text length
+        gui.getTextArea().setCaretPosition(Math.min(cursorPosition, newText.length()));
         gui.getIsRemoteChange().set(false);
+
+        // Update the local state after applying the patch
+        gui.setDocumentState(newText, payload.serverVersion());
     }
 
-    private void handleUserJoined(com.underroot.common.dto.payload.UserJoinedPayload payload) {
+    private void handleUserJoined(UserJoinedPayload payload) {
         DefaultListModel<String> model = (DefaultListModel<String>) gui.getUserList().getModel();
         if (!model.contains(payload.username())) {
             model.addElement(payload.username());
         }
     }
 
-    private void handleUserLeft(com.underroot.common.dto.payload.UserLeftPayload payload) {
+    private void handleUserLeft(UserLeftPayload payload) {
         DefaultListModel<String> model = (DefaultListModel<String>) gui.getUserList().getModel();
         model.removeElement(payload.username());
     }
 
-    private void handleCompileResult(com.underroot.common.dto.payload.CompileResultPayload payload) {
+    private void handleCompileResult(CompileResultPayload payload) {
         if (payload.success()) {
             try {
                 Path tempPdf = Files.createTempFile(payload.docId() + "-", ".pdf");
