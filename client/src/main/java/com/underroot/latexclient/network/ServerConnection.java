@@ -24,7 +24,8 @@ import java.nio.file.Path;
 
 public class ServerConnection {
 
-    private static final String SERVER_ADDRESS = "127.0.0.1"; // localhost
+    // private static final String SERVER_ADDRESS = "127.0.0.1"; // REMOVIDO
+    private final String serverAddress; // NOVO CAMPO
     private static final int SERVER_PORT = 58008;
 
     private Socket socket;
@@ -34,24 +35,32 @@ public class ServerConnection {
     private final LatexEditorGui gui;
     private final DocumentTransformer documentTransformer = new DocumentTransformer();
 
-    public ServerConnection(LatexEditorGui gui) {
+    // CONSTRUTOR ATUALIZADO
+    public ServerConnection(LatexEditorGui gui, String serverAddress) {
         this.gui = gui;
+        this.serverAddress = serverAddress;
     }
 
     // tenta se conectar com o servidor e inicia uma nova thread pra ouvir as mensagens do servidor
     public void connect() {
         try {
-            this.socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+            // USA O CAMPO serverAddress EM VEZ DA CONSTANTE
+            this.socket = new Socket(this.serverAddress, SERVER_PORT);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            System.out.println("✅ Connected to the server.");
+            System.out.println("✅ Connected to the server at " + this.serverAddress);
 
             // Start a new thread dedicated to listening for messages from the server.
             new Thread(this::startListening).start();
 
         } catch (IOException e) {
-            System.err.println("❌ Connection failed: " + e.getMessage());
+            System.err.println("❌ Connection failed to " + this.serverAddress + ": " + e.getMessage());
+            JOptionPane.showMessageDialog(gui, "Falha ao conectar ao servidor em:\n" + this.serverAddress + "\nVerifique o IP e se o servidor está rodando.", "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+            // Reinicia o login
+            disconnect();
+            gui.dispose();
+            Main.main(new String[]{});
         }
     }
 
@@ -72,7 +81,9 @@ public class ServerConnection {
                 handleMessage(message);
             }
         } catch (IOException e) {
-            System.out.println("Connection to server lost.");
+            if (socket != null && !socket.isClosed()) {
+                System.out.println("Connection to server lost.");
+            }
         }
     }
 
@@ -185,6 +196,8 @@ public class ServerConnection {
     // fecha a conexão
     public void disconnect() {
         try {
+            if (out != null) out.close();
+            if (in != null) in.close();
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Also closes the associated streams
                 System.out.println("Disconnected from the server.");

@@ -13,11 +13,14 @@ public class Main {
         // Use SwingUtilities.invokeLater to ensure GUI updates are on the Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
             // Create a panel with all the input fields
+            JTextField serverIpField = new JTextField("127.0.0.1"); // NOVO CAMPO
             JTextField usernameField = new JTextField();
             JTextField docIdField = new JTextField("default-doc");
             JPasswordField passwordField = new JPasswordField();
 
             JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Endereço IP do Servidor:")); // NOVO LABEL
+            panel.add(serverIpField); // NOVO CAMPO ADICIONADO
             panel.add(new JLabel("Your Username:"));
             panel.add(usernameField);
             panel.add(new JLabel("Project Name:"));
@@ -29,6 +32,7 @@ public class Main {
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (result == JOptionPane.OK_OPTION) {
+                String serverIp = serverIpField.getText(); // OBTER O IP
                 String username = usernameField.getText();
                 String docId = docIdField.getText();
                 String password = new String(passwordField.getPassword());
@@ -40,12 +44,15 @@ public class Main {
                     JOptionPane.showMessageDialog(null, "Project name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
                     System.exit(0);
                 }
+                if (serverIp == null || serverIp.trim().isEmpty()) {
+                    serverIp = "127.0.0.1"; // Fallback para localhost
+                }
 
                 // 1. Create the GUI
                 LatexEditorGui gui = new LatexEditorGui();
 
-                // 2. Create the server connection
-                ServerConnection serverConnection = new ServerConnection(gui);
+                // 2. Create the server connection (PASSANDO O IP)
+                ServerConnection serverConnection = new ServerConnection(gui, serverIp);
 
                 // 3. Link the GUI to the connection and set document details
                 gui.setServerConnection(serverConnection);
