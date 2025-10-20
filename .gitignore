@@ -1,0 +1,6 @@
+# Ignore all files and folders starting with .
+.*
+!.gitignore
+
+# Ignore all .md files
+*.md

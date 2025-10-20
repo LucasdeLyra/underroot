@@ -1,0 +1,10 @@
+com\underroot\latexserver\ot\Operation.class
+com\underroot\latexserver\Main.class
+com\underroot\latexserver\model\Document.class
+com\underroot\latexserver\handlers\MessageHandler.class
+com\underroot\latexserver\compiler\LatexCompiler.class
+com\underroot\latexserver\ClientHandler$1.class
+com\underroot\latexserver\ClientHandler.class
+com\underroot\latexserver\LatexServer.class
+com\underroot\latexserver\model\DocumentManager.class
+com\underroot\latexserver\compiler\LatexCompiler$CompilationResult.class

@@ -1,0 +1,61 @@
+package com.underroot.latexclient;
+
+import com.underroot.common.dto.Message;
+import com.underroot.common.dto.MessageType;
+import com.underroot.common.dto.payload.JoinDocumentPayload;
+import com.underroot.latexclient.network.ServerConnection;
+
+import javax.swing.*;
+import java.awt.GridLayout;
+
+public class Main {
+    public static void main(String[] args) {
+        // Use SwingUtilities.invokeLater para garantir que as atualizações da interface gráfica (GUI) ocorram na Thread de Despacho de Eventos.
+        SwingUtilities.invokeLater(() -> {
+            JTextField usernameField = new JTextField();
+            JTextField docIdField = new JTextField("default-doc");
+            JPasswordField passwordField = new JPasswordField();
+
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Seu usuário:"));
+            panel.add(usernameField);
+            panel.add(new JLabel("Nome do projeto:"));
+            panel.add(docIdField);
+            panel.add(new JLabel("Senha do projeto:"));
+            panel.add(passwordField);
+
+            int result = JOptionPane.showConfirmDialog(null, panel, "Criar ou se juntar a um projeto",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText();
+                String docId = docIdField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if (username == null || username.trim().isEmpty()) {
+                    username = "usuário-" + (int) (Math.random() * 1000);
+                }
+                if (docId == null || docId.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Nome do projeto não pode estar vazio.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    System.exit(0);
+                }
+
+                LatexEditorGui gui = new LatexEditorGui();
+
+                ServerConnection serverConnection = new ServerConnection(gui);
+
+                gui.setServerConnection(serverConnection);
+                gui.setDocId(docId);
+
+                serverConnection.connect();
+
+                gui.setVisible(true);
+
+                JoinDocumentPayload payload = new JoinDocumentPayload(docId, username, password);
+                serverConnection.sendMessage(Message.of(MessageType.JOIN_DOCUMENT, payload));
+            } else {
+                System.exit(0);
+            }
+        });
+    }
+}

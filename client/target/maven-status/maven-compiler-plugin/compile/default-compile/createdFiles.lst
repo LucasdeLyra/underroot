@@ -1,0 +1,5 @@
+com\underroot\latexclient\LatexEditorGui.class
+com\underroot\latexclient\network\ServerConnection.class
+com\underroot\latexclient\network\ServerConnection$1.class
+com\underroot\latexclient\LatexEditorGui$1.class
+com\underroot\latexclient\Main.class
