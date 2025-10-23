@@ -18,10 +18,10 @@ public class LatexEditorGui extends JFrame {
     private JTextArea textArea;
     private JList<String> userList;
     private JButton compileButton;
-    private JButton logoutButton; // Add logout button field
+    private JButton logoutButton;
     private ServerConnection serverConnection;
     private final AtomicBoolean isRemoteChange = new AtomicBoolean(false);
-    private String docId; // To know which document we are editing
+    private String docId; // Para saber qual documento a gente está editando
     private final DocumentTransformer documentTransformer = new DocumentTransformer();
     private String lastKnownText = "";
     private int clientVersion = 0;
@@ -37,30 +37,24 @@ public class LatexEditorGui extends JFrame {
     private void initComponents() {
         textArea = new JTextArea();
         userList = new JList<>(new DefaultListModel<>());
-        compileButton = new JButton("Compile");
-        logoutButton = new JButton("Logout"); // Initialize the button
+        compileButton = new JButton("Compila");
+        logoutButton = new JButton("Logout");
     }
 
     private void layoutComponents() {
-        // Main panel with BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Text area in the center
         JScrollPane textScrollPane = new JScrollPane(textArea);
         mainPanel.add(textScrollPane, BorderLayout.CENTER);
 
-        // Right panel for users and compile button
         JPanel rightPanel = new JPanel(new BorderLayout(10, 10));
         rightPanel.setPreferredSize(new Dimension(200, 0));
 
-        // User list
         JScrollPane userListScrollPane = new JScrollPane(userList);
         rightPanel.add(userListScrollPane, BorderLayout.CENTER);
         rightPanel.add(new JLabel("Collaborators"), BorderLayout.NORTH);
 
-
-        // Compile and Logout buttons at the bottom
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 5)); // Use GridLayout for two buttons
         buttonPanel.add(compileButton);
         buttonPanel.add(logoutButton);
@@ -68,7 +62,6 @@ public class LatexEditorGui extends JFrame {
 
         mainPanel.add(rightPanel, BorderLayout.EAST);
 
-        // Add main panel to the frame
         setContentPane(mainPanel);
     }
 
@@ -82,7 +75,7 @@ public class LatexEditorGui extends JFrame {
         this.serverConnection = serverConnection;
         addTextModificationListener();
         addCompileButtonListener();
-        addLogoutButtonListener(); // Add listener for the new button
+        addLogoutButtonListener();
     }
 
     public void setDocId(String docId) {
@@ -94,7 +87,7 @@ public class LatexEditorGui extends JFrame {
     public void setDocumentState(String content, int version) {
         this.lastKnownText = content;
         this.serverVersion = version;
-        // This might be the initial state, so update the text area
+        // Este pode ser o estado inicial, portanto atualize a área de texto.
         isRemoteChange.set(true);
         textArea.setText(content);
         isRemoteChange.set(false);
@@ -130,7 +123,6 @@ public class LatexEditorGui extends JFrame {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                // Plain text components do not fire these events
             }
         });
     }
@@ -138,7 +130,7 @@ public class LatexEditorGui extends JFrame {
     private void addCompileButtonListener() {
         compileButton.addActionListener(e -> {
             if (serverConnection != null && docId != null) {
-                System.out.println("Compile button clicked for doc: " + docId);
+                System.out.println("Botão de compilar clicado para o documento.: " + docId);
                 RequestCompilePayload payload = new RequestCompilePayload(docId);
                 serverConnection.sendMessage(Message.of(MessageType.REQUEST_COMPILE, payload));
             }
@@ -147,18 +139,15 @@ public class LatexEditorGui extends JFrame {
 
     private void addLogoutButtonListener() {
         logoutButton.addActionListener(e -> {
-            // Disconnect from the server
             if (serverConnection != null) {
                 serverConnection.disconnect();
             }
-            // Close the current editor window
             this.dispose();
-            // Re-run the main method to show the login dialog again
             Main.main(new String[]{});
         });
     }
 
-    // Getters for components to be accessed from outside
+    // Getters para a components para ser acessado de fora
     public JTextArea getTextArea() {
         return textArea;
     }

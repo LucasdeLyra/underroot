@@ -47,25 +47,24 @@ public class ClientHandler implements Runnable {
 
             String jsonMessage;
             while ((jsonMessage = in.readLine()) != null) {
-                // Deserialize the incoming JSON string into our Message object
+                // DDesserializa a string JSON recebida em nosso objeto Message.
                 Message message = gson.fromJson(jsonMessage, Message.class);
                 handleMessage(message);
             }
         } catch (SocketException e) {
-            System.out.println("Client " + clientSocket.getInetAddress().getHostAddress() + " disconnected.");
+            System.out.println("Cliente " + clientSocket.getInetAddress().getHostAddress() + " disconectado.");
         } catch (IOException e) {
-            System.err.println("Error handling client: " + clientSocket.getInetAddress().getHostAddress());
+            System.err.println("Erro ao lidar com o cliente.: " + clientSocket.getInetAddress().getHostAddress());
             e.printStackTrace();
         } finally {
-            // TODO: Gracefully remove client from any documents they were in
             closeConnection();
         }
     }
 
     // direciona as mensagens recebidas com base no seu tipo
     private void handleMessage(Message message) {
-        System.out.println("Received message of type: " + message.type());
-
+        System.out.println("Tipo de mensagem recebida : " + message.type());
+//fala tipo da mensagem, mas não de quem
         switch (message.type()) {
             case MessageType.JOIN_DOCUMENT:
                 MessageHandler.handleJoinDocument(this, message.getPayload(JoinDocumentPayload.class));
@@ -77,7 +76,7 @@ public class ClientHandler implements Runnable {
                 MessageHandler.handleRequestCompile(this, message.getPayload(RequestCompilePayload.class));
                 break;
             default:
-                System.out.println("Unknown message type: " + message.type());
+                System.out.println("Tipo de mensagem desconhecida: " + message.type());
                 break;
         }
     }
