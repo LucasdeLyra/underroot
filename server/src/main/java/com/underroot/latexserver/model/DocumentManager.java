@@ -1,4 +1,5 @@
 package com.underroot.latexserver.model;
+//  ------ GERADO TOTALMENTE PELO GEMINI ------
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

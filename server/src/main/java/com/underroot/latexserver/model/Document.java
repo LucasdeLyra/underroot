@@ -1,9 +1,10 @@
 package com.underroot.latexserver.model;
-
-import com.underroot.latexserver.ClientHandler;
+//  ------ GERADO TOTALMENTE PELO GEMINI ------
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.underroot.latexserver.ClientHandler;
 
 public class Document {
 

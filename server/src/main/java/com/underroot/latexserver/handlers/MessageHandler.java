@@ -1,5 +1,10 @@
 package com.underroot.latexserver.handlers;
+//  ------ GERADO PARCIALMENTE PELO GEMINI ------
+/* Originalmente era parte do arquivo ClientHandler. 
+ * A lógica foi abstraída para este arquivo e as mudanças necessárias foram feitas de forma manual, a fim de mandar coesão do código 
+ */
 
+//TODO: ABSTRAIR LÓGICA PARA USAR INTERFACE E FAZER SOBRECARGA DOS MÉTODOS
 import com.underroot.common.dto.Message;
 import com.underroot.common.dto.MessageType;
 import com.underroot.common.dto.payload.DocumentStatePayload;

@@ -1,4 +1,5 @@
 package com.underroot.common.dto;
+//  ------ GERADO TOTALMENTE PELO GEMINI ------
 
 import com.google.gson.Gson;
 
