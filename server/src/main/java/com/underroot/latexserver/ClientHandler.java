@@ -1,4 +1,14 @@
 package com.underroot.latexserver;
+//  ------ GERADO PARCIALMENTE PELO GEMINI ------
+/* Remodelagem para desacoplação dos handlers feita manualmente.
+ * Tratamento de erros, melhoria nos logs e feedback ao client feito manualmente.
+ */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketException;
 
 import com.google.gson.Gson;
 import com.underroot.common.dto.Message;
@@ -12,13 +22,6 @@ import com.underroot.latexserver.compiler.LatexCompiler;
 import com.underroot.latexserver.handlers.MessageHandler;
 import com.underroot.latexserver.model.Document;
 import com.underroot.latexserver.model.DocumentManager;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.SocketException;
 
 public class ClientHandler implements Runnable {
 

@@ -1,8 +1,9 @@
 package com.underroot.common.ot;
-
-import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
+//  ------ GERADO TOTALMENTE PELO GEMINI ------
 
 import java.util.LinkedList;
+
+import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 
 public class DocumentTransformer {
 

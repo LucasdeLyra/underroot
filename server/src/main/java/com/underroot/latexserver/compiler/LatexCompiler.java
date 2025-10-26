@@ -1,4 +1,5 @@
 package com.underroot.latexserver.compiler;
+//  ------ GERADO TOTALMENTE PELO GEMINI ------
 
 import java.io.IOException;
 import java.nio.file.Files;

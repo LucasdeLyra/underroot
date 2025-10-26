@@ -1,4 +1,25 @@
 package com.underroot.latexclient;
+//  ------ GERADO PARCIALMENTE PELO GEMINI ------
+/* Remoção de imports não utilizados e com .* feitas automaticamente pelo linter.
+ * Inserção de campos como endereço de IP, nome de usuário e senha feitos manualmente.
+ * Alguns tratamentos de erro como erro de login feitos manualmente.
+ */
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.underroot.common.dto.Message;
 import com.underroot.common.dto.MessageType;
@@ -6,12 +27,6 @@ import com.underroot.common.dto.payload.PatchDocumentPayload;
 import com.underroot.common.dto.payload.RequestCompilePayload;
 import com.underroot.common.ot.DocumentTransformer;
 import com.underroot.latexclient.network.ServerConnection;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LatexEditorGui extends JFrame {
 
@@ -53,7 +68,7 @@ public class LatexEditorGui extends JFrame {
 
         JScrollPane userListScrollPane = new JScrollPane(userList);
         rightPanel.add(userListScrollPane, BorderLayout.CENTER);
-        rightPanel.add(new JLabel("Collaborators"), BorderLayout.NORTH);
+        rightPanel.add(new JLabel("Collaboradores"), BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 5)); // Use GridLayout for two buttons
         buttonPanel.add(compileButton);

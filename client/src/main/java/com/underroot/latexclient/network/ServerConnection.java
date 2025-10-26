@@ -1,4 +1,23 @@
 package com.underroot.latexclient.network;
+//  ------ GERADO PARCIALMENTE PELO GEMINI ------
+/* Remoção de imports não utilizados e com .* feitas automaticamente pelo linter.
+ * Fortemente inspirado em https://medium.com/@paritosh_30025/client-server-architecture-from-scratch-java-e5678c0af6c9
+ */
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import com.google.gson.Gson;
 import com.underroot.common.dto.Message;
@@ -11,16 +30,6 @@ import com.underroot.common.dto.payload.UserLeftPayload;
 import com.underroot.common.ot.DocumentTransformer;
 import com.underroot.latexclient.LatexEditorGui;
 import com.underroot.latexclient.Main;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class ServerConnection {
 
@@ -49,13 +58,13 @@ public class ServerConnection {
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            System.out.println("✅ Connected to the server at " + this.serverAddress);
+            System.out.println("Connected to the server at " + this.serverAddress);
 
             // Start a new thread dedicated to listening for messages from the server.
             new Thread(this::startListening).start();
 
         } catch (IOException e) {
-            System.err.println("❌ Connection failed to " + this.serverAddress + ": " + e.getMessage());
+            System.err.println("Connection failed to " + this.serverAddress + ": " + e.getMessage());
             JOptionPane.showMessageDialog(gui, "Falha ao conectar ao servidor em:\n" + this.serverAddress + "\nVerifique o IP e se o servidor está rodando.", "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
             // Reinicia o login
             disconnect();

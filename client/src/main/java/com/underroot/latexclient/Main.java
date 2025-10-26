@@ -1,12 +1,22 @@
 package com.underroot.latexclient;
+//  ------ GERADO PARCIALMENTE PELO GEMINI ------
+/* fortemente inspirado em https://medium.com/@paritosh_30025/client-server-architecture-from-scratch-java-e5678c0af6c9
+ * Remoção de imports não utilizados e com .* feitas automaticamente pelo linter.
+ * Alterações como poder aceitar um endereço de IP diferente feitos manualmente.
+ */
+import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import com.underroot.common.dto.Message;
 import com.underroot.common.dto.MessageType;
 import com.underroot.common.dto.payload.JoinDocumentPayload;
 import com.underroot.latexclient.network.ServerConnection;
-
-import javax.swing.*;
-import java.awt.GridLayout;
 
 public class Main {
     public static void main(String[] args) {

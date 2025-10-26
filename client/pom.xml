@@ -41,7 +41,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
             </plugin>
-            <!-- Create an executable uber-jar named Client.jar -->
+            <!-- https://stackoverflow.com/questions/54574832/maven-executable-file-from-a-java-project -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

@@ -1,10 +1,10 @@
 package com.underroot.latexserver;
-
-import com.underroot.latexserver.model.DocumentManager;
-
+// fortemente inspirado em https://medium.com/@paritosh_30025/client-server-architecture-from-scratch-java-e5678c0af6c9
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import com.underroot.latexserver.model.DocumentManager;
 
 public class LatexServer {
 
@@ -14,7 +14,7 @@ public class LatexServer {
     // cria um serverSocket na porta 58008
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("✅ Server started. Listening on port " + PORT);
+            System.out.println("Server started. Listening on port " + PORT);
 
             // o loop infinito faz o servidor rodar pra sempre e aceitar novas conexões.
             // para cada cliente novo, vai ser criado um gerente para ele (classe ClientHandle)
@@ -30,7 +30,7 @@ public class LatexServer {
                 new Thread(clientHandler).start();
             }
         } catch (IOException e) {
-            System.err.println("❌ Could not start server on port " + PORT);
+            System.err.println("Could not start server on port " + PORT);
             e.printStackTrace();
         }
     }

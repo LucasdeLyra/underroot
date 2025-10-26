@@ -1,10 +1,11 @@
 package com.underroot.latexserver.ot;
+//  ------ GERADO TOTALMENTE PELO GEMINI ------
 
 public class Operation {
     private final String type;
     private final int position;
-    private final String text; // For insert
-    private final int length; // For delete
+    private final String text;
+    private final int length;
 
     public Operation(String type, int position, String text, int length) {
         this.type = type;
