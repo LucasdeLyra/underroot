@@ -1,3 +1,9 @@
+To run this project you will need:
+- Java 21
+- mvn 3.9.11
+- MiKTex with the packages of pdflatex (pdflatexpicscale, pdflatexpicscale_doc, pdflatexpicscale_source, etc)
+
+
 This project is already compiled, so you can just clone the repo using "git clone https://github.com/LucasdeLyra/underroot.git" or download the .zip and then follow runing the server and client inside the underroot folder
 
 ## Run server and client using .jar
