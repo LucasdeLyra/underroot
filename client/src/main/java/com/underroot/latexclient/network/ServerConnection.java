@@ -186,12 +186,21 @@ public class ServerConnection {
     private void handleCompileResult(CompileResultPayload payload) {
         if (payload.success()) {
             try {
-                Path tempPdf = Files.createTempFile(payload.docId() + "-", ".pdf");
-                Files.write(tempPdf, payload.pdfBytes());
-                JOptionPane.showMessageDialog(gui, "Compilation successful! PDF saved to:\n" + tempPdf.toAbsolutePath(), "Compilation Success", JOptionPane.INFORMATION_MESSAGE);
+                // Save the PDF to the application's current working directory (./)
+                Path cwd = Path.of(System.getProperty("user.dir"));
+                Path outPdf = cwd.resolve(payload.docId() + ".pdf");
+                // Avoid overwriting existing files: add a numeric suffix if needed
+                Path finalPdf = outPdf;
+                int suffix = 1;
+                while (Files.exists(finalPdf)) {
+                    finalPdf = cwd.resolve(payload.docId() + "-" + suffix + ".pdf");
+                    suffix++;
+                }
+                Files.write(finalPdf, payload.pdfBytes());
+                JOptionPane.showMessageDialog(gui, "Compilation successful! PDF saved to:\n" + finalPdf.toAbsolutePath(), "Compilation Success", JOptionPane.INFORMATION_MESSAGE);
                 // Try to open the PDF file
                 if (Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().open(tempPdf.toFile());
+                    Desktop.getDesktop().open(finalPdf.toFile());
                 }
             } catch (IOException e) {
                 e.printStackTrace();

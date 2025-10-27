@@ -11,33 +11,26 @@ public class LatexCompiler {
     public record CompilationResult(boolean success, byte[] fileBytes, String log) {}
 
     public CompilationResult compile(String docId, String content) {
-        Path tempDir = null;
         try {
-            // 1. Create a temporary directory for the compilation
-            tempDir = Files.createTempDirectory("latex-compile-" + docId);
-            Path texFile = tempDir.resolve(docId + ".tex");
+            Path cwd = Path.of(System.getProperty("user.dir"));
+            Path texFile = cwd.resolve(docId + ".tex");
             Files.writeString(texFile, content);
 
-            // 2. Run the pdflatex command
-            //    THIS IS A PLACEHOLDER. A real implementation needs robust error handling,
-            //    and security checks (e.g., preventing directory traversal).
             ProcessBuilder pb = new ProcessBuilder(
                 "pdflatex",
                 "-interaction=nonstopmode",
-                "-output-directory=" + tempDir.toAbsolutePath(),
-                texFile.toAbsolutePath().toString()
+                "-output-directory=.",
+                texFile.getFileName().toString()
             );
+            pb.directory(cwd.toFile());
             
             // Redirect error stream to output stream so we can read both
             pb.redirectErrorStream(true);
 
             Process process = pb.start();
 
-            // Capture the output/log
-            String log = new String(process.getInputStream().readAllBytes());
-
-            // Wait for the process to complete
             boolean finished = process.waitFor(30, TimeUnit.SECONDS); // 30-second timeout
+            String log = new String(process.getInputStream().readAllBytes());
 
             if (!finished || process.exitValue() != 0) {
                 System.err.println("pdflatex compilation failed for " + docId);
@@ -45,8 +38,8 @@ public class LatexCompiler {
                 return new CompilationResult(false, null, log);
             }
 
-            // 3. Read the resulting PDF
-            Path pdfFile = tempDir.resolve(docId + ".pdf");
+            // 3. Read the resulting PDF from the server current directory (./)
+            Path pdfFile = cwd.resolve(docId + ".pdf");
             if (Files.exists(pdfFile)) {
                 byte[] pdfBytes = Files.readAllBytes(pdfFile);
                 return new CompilationResult(true, pdfBytes, log);
@@ -55,7 +48,7 @@ public class LatexCompiler {
             }
 
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            System.err.println("Server error during compilation: " + e.getMessage());
             return new CompilationResult(false, null, "Server error during compilation: " + e.getMessage());
         }
     }
