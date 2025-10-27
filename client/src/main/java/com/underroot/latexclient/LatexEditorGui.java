@@ -108,6 +108,16 @@ public class LatexEditorGui extends JFrame {
         isRemoteChange.set(false);
     }
 
+    /**
+     * Update the internal document state (lastKnownText and serverVersion) without
+     * replacing the text in the JTextArea. Use this when the caller already applied
+     * the text to the textArea and only wants to synchronize the internal state.
+     */
+    public void updateLocalDocumentState(String content, int version) {
+        this.lastKnownText = content;
+        this.serverVersion = version;
+    }
+
     public AtomicBoolean getIsRemoteChange() {
         return isRemoteChange;
     }
