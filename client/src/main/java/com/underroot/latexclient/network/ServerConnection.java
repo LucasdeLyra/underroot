@@ -144,18 +144,31 @@ public class ServerConnection {
     private void handlePatchDocument(PatchDocumentPayload payload) {
         // This is a simplified OT. A real implementation would need transformation logic.
         String currentText = gui.getTextArea().getText();
+        // Compute how the caret should shift so it keeps pointing to the same logical character
+        int cursorPosition = gui.getTextArea().getCaretPosition();
+        int caretShift = 0;
+        try {
+            caretShift = documentTransformer.computeCaretShift(currentText, payload.patch(), cursorPosition);
+        } catch (Exception e) {
+            // If for any reason we can't compute the shift, default to preserving the index
+            System.err.println("Failed to compute caret shift: " + e.getMessage());
+            caretShift = 0;
+        }
+
         String newText = documentTransformer.applyPatch(currentText, payload.patch());
 
         gui.getIsRemoteChange().set(true);
-        // Preserve cursor position
-        int cursorPosition = gui.getTextArea().getCaretPosition();
+        // Apply the new text and move caret so it keeps pointing to the same logical character
         gui.getTextArea().setText(newText);
-        // Try to restore cursor position, bounded by the new text length
-        gui.getTextArea().setCaretPosition(Math.min(cursorPosition, newText.length()));
+        int newCaret = cursorPosition + caretShift;
+        if (newCaret < 0) newCaret = 0;
+        if (newCaret > newText.length()) newCaret = newText.length();
+        gui.getTextArea().setCaretPosition(newCaret);
         gui.getIsRemoteChange().set(false);
 
-        // Update the local state after applying the patch
-        gui.setDocumentState(newText, payload.serverVersion());
+    // Update the local state after applying the patch without replacing text (to
+    // avoid overriding the caret we just set)
+    gui.updateLocalDocumentState(newText, payload.serverVersion());
     }
 
     private void handleUserJoined(UserJoinedPayload payload) {
